@@ -9,11 +9,12 @@
 import UIKit
 
 class ToDoListViewController: UITableViewController {
-let itemArray = ["найти молоко", "купить яйца","уничтожить Демогоргону","Спасти мир","съесть лягушку"]
+var itemArray = ["найти молоко", "купить яйца","уничтожить Демогоргону","Спасти мир","съесть лягушку"]
     override func viewDidLoad() {
         super.viewDidLoad()
       
     }
+    
     //MARK - Tableview DataSource Methods
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return itemArray.count
@@ -34,6 +35,27 @@ let itemArray = ["найти молоко", "купить яйца","уничт�
         }
         tableView.deselectRow(at: indexPath, animated: true)
     }
-
+    
+    //MARK Add new items
+    
+    @IBAction func addButtonPressed(_ sender: UIBarButtonItem) {
+        var textField = UITextField()
+        let alert = UIAlertController(title: "Add new item Todoye item", message: "", preferredStyle: .alert)
+        let action = UIAlertAction(title: "add item", style: .default) { (action) in
+            if let newItem = textField.text{
+                self.itemArray.append(newItem)
+              self.tableView.reloadData()
+            }
+            // добавление новой задачи в масссив ТуДу
+        }
+        
+        alert.addTextField { (alertTextField) in
+            alertTextField.placeholder = "Create new item"
+            textField = alertTextField
+        }
+        alert.addAction(action)
+        present(alert, animated: true, completion: nil)
+    }
+    
 }
 
