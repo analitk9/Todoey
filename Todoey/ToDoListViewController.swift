@@ -9,9 +9,13 @@
 import UIKit
 
 class ToDoListViewController: UITableViewController {
-var itemArray = ["найти молоко", "купить яйца","уничтожить Демогоргону","Спасти мир","съесть лягушку"]
+    var itemArray = ["найти молоко", "купить яйца","уничтожить Демогоргону","Спасти мир","съесть лягушку"]
+    let userDefault = UserDefaults.standard
     override func viewDidLoad() {
         super.viewDidLoad()
+        if let items = userDefault.array(forKey: "TodoListArray") as? [String]{
+            itemArray = items
+        }
       
     }
     
@@ -44,6 +48,7 @@ var itemArray = ["найти молоко", "купить яйца","уничт�
         let action = UIAlertAction(title: "add item", style: .default) { (action) in
             if let newItem = textField.text{
                 self.itemArray.append(newItem)
+                self.userDefault.set(self.itemArray, forKey: "TodoListArray")
               self.tableView.reloadData()
             }
             // добавление новой задачи в масссив ТуДу
