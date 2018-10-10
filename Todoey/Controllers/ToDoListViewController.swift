@@ -10,12 +10,17 @@ import UIKit
 
 class ToDoListViewController: UITableViewController {
    
-    var itemArray = [Item]() 
+    var itemArray = [Item]()
     
-    let userDefault = UserDefaults.standard
+     let dataFilePath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent("Items.plist")
+    
+    //let userDefault = UserDefaults.standard
     
     override func viewDidLoad() {
         super.viewDidLoad()
+       
+       
+        
         let newItem = Item()
         newItem.title = "Fine Mike"
         itemArray.append(newItem)
@@ -26,9 +31,9 @@ class ToDoListViewController: UITableViewController {
         newItem.title = "Fine Eggos"
         itemArray.append(newItem3)
         
-       if let items = userDefault.array(forKey: "TodoListArray") as? [Item]{
-          itemArray = items
-        }
+//       if let items = userDefault.array(forKey: "TodoListArray") as? [Item]{
+//          itemArray = items
+//        }
       
     }
     
@@ -66,8 +71,15 @@ class ToDoListViewController: UITableViewController {
                let newItem = Item()
                 newItem.title = new
                 self.itemArray.append(newItem)
-                self.userDefault.set(self.itemArray, forKey: "TodoListArray")
-              self.tableView.reloadData()
+                let encoder =  PropertyListEncoder()
+                do{
+                    let data = try encoder.encode(self.itemArray)
+                    try data.write(to: self.dataFilePath!)
+                }catch{
+                    print("error encoding \(error)")
+                }
+                
+                self.tableView.reloadData()
             }
             // добавление новой задачи в масссив ТуДу
         }
