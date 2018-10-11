@@ -14,26 +14,14 @@ class ToDoListViewController: UITableViewController {
     
      let dataFilePath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent("Items.plist")
     
-    //let userDefault = UserDefaults.standard
-    
+   
     override func viewDidLoad() {
         super.viewDidLoad()
        
        
-        
-        let newItem = Item()
-        newItem.title = "Fine Mike"
-        itemArray.append(newItem)
-        let newItem2 = Item()
-        newItem.title = "Fine Dave"
-        itemArray.append(newItem2)
-        let newItem3 = Item()
-        newItem.title = "Fine Eggos"
-        itemArray.append(newItem3)
-        
-//       if let items = userDefault.array(forKey: "TodoListArray") as? [Item]{
-//          itemArray = items
-//        }
+        loadItems()
+
+
       
     }
     
@@ -53,15 +41,15 @@ class ToDoListViewController: UITableViewController {
     //MARK -  TableView Delegate Methods
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
-        //print(itemArray[indexPath.row])
       itemArray[indexPath.row].done = !itemArray[indexPath.row].done
+     
+        saveItems()
         
-       
         tableView.deselectRow(at: indexPath, animated: true)
-        tableView.reloadData()
+
     }
     
-    //MARK Add new items
+    //MARK  - Add new items
     
     @IBAction func addButtonPressed(_ sender: UIBarButtonItem) {
         var textField = UITextField()
@@ -71,15 +59,8 @@ class ToDoListViewController: UITableViewController {
                let newItem = Item()
                 newItem.title = new
                 self.itemArray.append(newItem)
-                let encoder =  PropertyListEncoder()
-                do{
-                    let data = try encoder.encode(self.itemArray)
-                    try data.write(to: self.dataFilePath!)
-                }catch{
-                    print("error encoding \(error)")
-                }
+                self.saveItems()
                 
-                self.tableView.reloadData()
             }
             // добавление новой задачи в масссив ТуДу
         }
@@ -90,6 +71,29 @@ class ToDoListViewController: UITableViewController {
         }
         alert.addAction(action)
         present(alert, animated: true, completion: nil)
+    }
+    
+    //MARK  - Model Manipulation Methods
+    func saveItems(){
+        let encoder =  PropertyListEncoder()
+        do{
+            let data = try encoder.encode(itemArray)
+            try data.write(to: dataFilePath!)
+        }catch{
+            print("error encoding \(error)")
+        }
+       self.tableView.reloadData()
+    }
+    
+    func loadItems(){
+        if  let data = try? Data(contentsOf: dataFilePath!){
+            let decoder = PropertyListDecoder()
+            do {
+            itemArray = try decoder.decode([Item].self, from: data)
+            } catch{
+                print("error decoding \(error)")
+            }
+        }
     }
     
 }
